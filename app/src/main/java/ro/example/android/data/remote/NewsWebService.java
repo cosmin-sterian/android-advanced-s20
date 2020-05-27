@@ -41,8 +41,17 @@ public class NewsWebService {
     }
 
 
-    public Single<List<ArticleDto>> fetchEverything(String query) {
-        return api.fetchEverything(API_KEY, query)
+    public Single<List<ArticleDto>> fetchEverything(NewsQuery newsQuery) {
+        return api.fetchEverything(API_KEY, newsQuery.getQ(),
+                newsQuery.getCountry(), newsQuery.getCategory(),
+                newsQuery.getSources())
+                .map(articlesResponse -> articlesResponse.articles);
+    }
+
+    public Single<List<ArticleDto>> fetchTopHeadlines(NewsQuery newsQuery) {
+        return api.fetchTopHeadlines(API_KEY, newsQuery.getQ(),
+                newsQuery.getCountry(), newsQuery.getCategory(),
+                newsQuery.getSources())
                 .map(articlesResponse -> articlesResponse.articles);
     }
 
@@ -50,6 +59,16 @@ public class NewsWebService {
 
         @GET("everything")
         Single<ArticlesResponse> fetchEverything(@Query("apiKey") String apiKey,
-                                                 @Query("q") String query);
+                                                 @Query("q") String query,
+                                                 @Query("country") String country,
+                                                 @Query("category") String category,
+                                                 @Query("sources") List<String> sources);
+
+        @GET("top-headlines")
+        Single<ArticlesResponse> fetchTopHeadlines(@Query("apiKey") String apiKey,
+                                                   @Query("q") String query,
+                                                   @Query("country") String country,
+                                                   @Query("category") String category,
+                                                   @Query("sources") List<String> sources);
     }
 }

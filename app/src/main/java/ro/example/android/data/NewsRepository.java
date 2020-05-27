@@ -9,6 +9,7 @@ import io.reactivex.schedulers.Schedulers;
 import ro.example.android.data.local.ArticleEntity;
 import ro.example.android.data.local.NewsDatabase;
 import ro.example.android.data.remote.ArticleDto;
+import ro.example.android.data.remote.NewsQuery;
 import ro.example.android.data.remote.NewsWebService;
 
 public class NewsRepository {
@@ -29,12 +30,12 @@ public class NewsRepository {
 
     public Completable fetchArticles() {
         // First fetch the articles from the webservice
-        return webService.fetchEverything("Android")
+        return webService.fetchEverything(NewsQuery.builder().setQ("Android").build())
                 // ... then ...
                 .flatMapCompletable((List<ArticleDto> articleDtos) -> {
                     // Convert models from DTO to Entity (can also be done using a for)
                     List<ArticleEntity> articleEntities = articleDtos.stream()
-                            .map(articleDto -> articleDto.toEntity())
+                            .map(ArticleDto::toEntity)
                             .collect(Collectors.toList());
 
                     // And save them into the database
